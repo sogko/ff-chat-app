@@ -1,3 +1,6 @@
-#status{
+.heading--status{
   font-size: 0.3em;
+}
+.app-container {
+  padding: 25px;
 }
