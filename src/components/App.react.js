@@ -21,7 +21,7 @@ export class App extends React.Component {
       showChatPanel: false,
 
       // list of chat messages to be displayed in the chat panel
-      messages: ["testmessage1", "testmessage2"],
+      messages: [],
 
       // list of users connected to the same socket server
       users: ["user1", "user2"]
@@ -147,6 +147,18 @@ export class App extends React.Component {
       users: users
     });
   }
+  handleSubmitJoin(username) {
+    user.name = username;
+
+    // when user click Join button on the JoinForm, tell socket.io to let this user join the chat
+    console.log("Joining chat with name: ", username);
+    socket.emit("join", user);
+
+    // disable join button when user click Join
+    this.setState({
+      disableJoinButton: true
+    });
+  }
 
   render() {
     return (
@@ -154,6 +166,7 @@ export class App extends React.Component {
         <Heading
           isConnected={this.state.isConnected}>WDISG2 Chat</Heading>
         <JoinForm
+          onSubmit={this.handleSubmitJoin.bind(this)}
           disabled={this.state.disableJoinButton}
           show={this.state.showJoinForm}/>
         <ChatPanel

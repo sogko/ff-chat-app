@@ -49,10 +49,19 @@ class MessageList extends React.Component {
     messages: React.PropTypes.array
   };
 
+  renderMessages() {
+    let messages = [];
+    for (var i = this.props.messages.length - 1; i >= 0; i--) {
+      messages.push(
+        <div key={i}>test</div>
+      );
+    }
+    return messages;
+  }
   render() {
     return (
       <div id="messages">
-        {this.props.messages}
+        {this.renderMessages()}
       </div>
     );
   }
