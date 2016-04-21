@@ -159,6 +159,16 @@ export class App extends React.Component {
       disableJoinButton: true
     });
   }
+  handleSubmitMessage(message) {
+    // when user click submit button on the MessageForm in ChatPanel, send the message to socket.io
+    console.log("Sending message: ", message);
+    socket.emit("chat", message);
+
+    this.addMessage({
+      type: "current_user_chat_message",
+      message: message
+    });
+  }
 
   render() {
     return (
@@ -170,6 +180,7 @@ export class App extends React.Component {
           disabled={this.state.disableJoinButton}
           show={this.state.showJoinForm}/>
         <ChatPanel
+          onSubmit={this.handleSubmitMessage.bind(this)}
           disabled={this.state.disableChatButton}
           users={this.state.users}
           messages={this.state.messages}

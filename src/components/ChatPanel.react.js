@@ -4,8 +4,31 @@ import cs from 'classnames';
 class ChatPanelHeading extends React.Component {
 
   static propTypes = {
+    onSubmit: React.PropTypes.func,
     disabled: React.PropTypes.bool
   };
+
+  handleClickSubmit(event) {
+    //halt default form behaviour
+    event.preventDefault();
+
+    // get value of message from input
+    const message = this.refs.message.value;
+
+    // check if message is empty
+    if (!message.length) {
+      return false;
+    }
+
+    // pass message string to onSubmit handler
+    if (this.props.onSubmit) {
+      this.props.onSubmit(message);
+    }
+
+    // reset message input value
+    this.refs.message.value = "";
+    return false;
+  }
 
   render() {
     return (
@@ -25,6 +48,7 @@ class ChatPanelHeading extends React.Component {
               id="sendMessage"
               className="btn btn-success"
               disabled={this.props.disabled}
+              onClick={this.handleClickSubmit.bind(this)}
             >Send</button>
           </fieldset>
         </form>
@@ -90,6 +114,7 @@ class ChatPanelBody extends React.Component {
 export class ChatPanel extends React.Component {
 
   static propTypes = {
+    onSubmit: React.PropTypes.func,
     users: React.PropTypes.array,
     messages: React.PropTypes.array,
     disabled: React.PropTypes.bool,
@@ -105,6 +130,7 @@ export class ChatPanel extends React.Component {
     return (
       <main className={mainClass}>
         <ChatPanelHeading
+          onSubmit={this.props.onSubmit}
           disabled={this.props.disabled}/>
         <ChatPanelBody
           users={this.props.users}
