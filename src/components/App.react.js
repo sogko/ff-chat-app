@@ -8,8 +8,16 @@ export class App extends React.Component {
   constructor(props) {
     super(props);
 
+    // connection to our socket server
+    this.socket = io(window.location.host);
+    
     // initial App state
     this.state = {
+
+      // current user state
+      user: {
+        name: "anon"
+      },
 
       // whether socket connection has been established
       isConnected: false,
@@ -34,35 +42,35 @@ export class App extends React.Component {
   componentDidMount() {
 
     //handle connecting to and disconnecting from the chat server
-    socket.on("connect", this.handleConnect.bind(this));
-    socket.on("disconnect", this.handleConnect.bind(this));
+    this.socket.on("connect", this.handleConnect.bind(this));
+    this.socket.on("disconnect", this.handleConnect.bind(this));
 
     //welcome message received from the server
-    socket.on("welcome", this.handleWelcome.bind(this));
+    this.socket.on("welcome", this.handleWelcome.bind(this));
 
     //chat message from another user
-    socket.on("chat", this.handleChat.bind(this));
+    this.socket.on("chat", this.handleChat.bind(this));
 
     //message received that new user has joined the chat
-    socket.on("joined", this.handleJoined.bind(this));
+    this.socket.on("joined", this.handleJoined.bind(this));
 
     //handle leaving message
-    socket.on("left", this.handleLeft.bind(this));
+    this.socket.on("left", this.handleLeft.bind(this));
 
     //keep track of who is online
-    socket.on("online", this.handleTrackOnline.bind(this));
+    this.socket.on("online", this.handleTrackOnline.bind(this));
 
   }
   // Invoked immediately before a component is unmounted from the DOM.
   componentWillUnmount() {
 
-    socket.off("connect");
-    socket.off("disconnect");
-    socket.off("welcome");
-    socket.off("chat");
-    socket.off("joined");
-    socket.off("left");
-    socket.off("online");
+    this.socket.off("connect");
+    this.socket.off("disconnect");
+    this.socket.off("welcome");
+    this.socket.off("chat");
+    this.socket.off("joined");
+    this.socket.off("left");
+    this.socket.off("online");
 
   }
 
@@ -117,19 +125,19 @@ export class App extends React.Component {
     });
   }
   handleJoined(user) {
-    console.log(user.name + " joined the chat.");
+    console.log(this.state.user.name + " joined the chat.");
 
     this.addMessage({
       type: "join_message",
-      username: user.name
+      username: this.state.user.name
     });
   }
   handleLeft(user) {
-    console.log(user.name + " left the chat.");
+    console.log(this.state.user.name + " left the chat.");
 
     this.addMessage({
       type: "left_message",
-      username: user.name
+      username: this.state.user.name
     });
   }
   handleTrackOnline(connections) {
@@ -148,21 +156,23 @@ export class App extends React.Component {
     });
   }
   handleSubmitJoin(username) {
+    let user = this.state.user;
     user.name = username;
 
     // when user click Join button on the JoinForm, tell socket.io to let this user join the chat
     console.log("Joining chat with name: ", username);
-    socket.emit("join", user);
+    this.socket.emit("join", user);
 
     // disable join button when user click Join
     this.setState({
+      user: user,
       disableJoinButton: true
     });
   }
   handleSubmitMessage(message) {
     // when user click submit button on the MessageForm in ChatPanel, send the message to socket.io
     console.log("Sending message: ", message);
-    socket.emit("chat", message);
+    this.socket.emit("chat", message);
 
     this.addMessage({
       type: "current_user_chat_message",
