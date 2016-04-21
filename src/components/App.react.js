@@ -17,8 +17,8 @@ export class App extends React.Component {
       // flags to show/hide component elements
       disableJoinButton: false,
       showJoinForm: true,
-      disableChatButton: true,
-      showChatPanel: true,
+      disableChatButton: false,
+      showChatPanel: false,
 
       // list of chat messages to be displayed in the chat panel
       messages: ["testmessage1", "testmessage2"],
@@ -32,11 +32,34 @@ export class App extends React.Component {
 
   // Invoked once, only on the client (not on the server), immediately after the initial rendering occurs.
   componentDidMount() {
-    // register listeners
+
+    //handle connecting to and disconnecting from the chat server
+    socket.on("connect", this.handleConnect.bind(this));
+    socket.on("disconnect", this.handleConnect.bind(this));
+
   }
   // Invoked immediately before a component is unmounted from the DOM.
   componentWillUnmount() {
-    // remove listeners
+
+    socket.off("connect");
+    socket.off("disconnect");
+
+  }
+
+  /* React component event handler methods */
+
+  handleConnect() {
+    console.log("Connected to Chat Socket");
+    this.setState({
+      isConnected: true
+    });
+  }
+  
+  handleDisconnect() {
+    console.log("Disconnected from Chat Socket");
+    this.setState({
+      isConnected: false
+    });
   }
 
   render() {
