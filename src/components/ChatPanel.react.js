@@ -76,9 +76,50 @@ class MessageList extends React.Component {
   renderMessages() {
     let messages = [];
     for (var i = this.props.messages.length - 1; i >= 0; i--) {
-      messages.push(
-        <div key={i}>test</div>
-      );
+      const msg = this.props.messages[i];
+      switch (msg.type) {
+        case "welcome_message": {
+          messages.push(
+            <div key={i} class="text-center messages-welcome">
+              <strong>{msg.message}</strong>
+            </div>
+          );
+          break;
+        }
+        case "chat_message": {
+          messages.push(
+            <div key={i} className="alert alert-success">
+              <strong>{msg.username}:</strong> {msg.message}
+            </div>
+          );
+          break;
+        }
+        case "current_user_chat_message": {
+          //attach clients own message in a different style
+          messages.push(
+            <div key={i} className="alert alert-info text-right">
+              {msg.message}
+            </div>
+          );
+          break;
+        }
+        case "join_message": {
+          messages.push(
+            <div key={i} className="text-center">
+              <strong>{msg.username}:</strong> joined the chat.
+            </div>
+          );
+          break;
+        }
+        case "left_message": {
+          messages.push(
+            <div key={i} className="text-center">
+              <strong>{msg.username}:</strong> left the chat.
+            </div>
+          );
+          break;
+        }
+      }
     }
     return messages;
   }
