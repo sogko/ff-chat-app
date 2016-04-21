@@ -63,8 +63,22 @@ class ConnectedUsersList extends React.Component {
     users: React.PropTypes.array
   };
 
+  renderUsers() {
+    let names = "";
+    for (var i = 0; i< this.props.users.length; ++i){
+      const user = this.props.users[i];
+      if ( user ) {
+        if ( i > 0 ) {
+          if ( i == this.props.users.length - 1 ) names += " and ";
+          else names += ", ";
+        }
+        names += user;
+      }
+    }
+    return <span>{names}</span>;
+  }
   render() {
-    return <small id="connected">{this.props.users}</small>;
+    return <small id="connected">{this.renderUsers()}</small>;
   }
 }
 class MessageList extends React.Component {
