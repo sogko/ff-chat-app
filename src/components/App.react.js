@@ -4,12 +4,29 @@ import { Heading } from './Heading.react'
 import { ChatPanel } from './ChatPanel.react'
 import { JoinForm } from './JoinForm.react'
 
+function getQueryValueByName(name) {
+  const url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 export class App extends React.Component {
   constructor(props) {
     super(props);
 
-    // connection to our socket server
-    this.socket = io(window.location.host);
+    // get and store the socket server location
+    // for e.g. http://sogko.github.io/ff-chat-app?server=localhost:3000
+    // where `sogko.github.io/ff-chat-app` is the client
+    // and   `localhost:3000` is the server
+    this.serverLocation = getQueryValueByName('server') || window.location.host;
+
+    // stores the connection to our socket server.
+    // will be initialized when component gets mounted on client
+    this.socket = null;
     
     // initial App state
     this.state = {
@@ -40,6 +57,10 @@ export class App extends React.Component {
 
   // Invoked once, only on the client (not on the server), immediately after the initial rendering occurs.
   componentDidMount() {
+
+    // initialize connection to socket server
+    // probably a better place to put this since this gets invoked only once on client (not server)
+    this.socket = io(this.serverLocation);
 
     //handle connecting to and disconnecting from the chat server
     this.socket.on("connect", this.handleConnect.bind(this));
